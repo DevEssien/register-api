@@ -11,6 +11,16 @@ app.use(bodyParser.json());
 
 app.use('/auth', userRoute)
 
+app.use((error, req, res, next) => {
+    const statusCode = error?.statusCode || 500;
+    const message = error?.message || 'Server Side error';
+    const data = error?.data || null;
+    return res.status(statusCode).json({
+        statusCode,
+        message,
+        data
+    })
+})
 const createTable = async () => {
     await User.sync()
 }

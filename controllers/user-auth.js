@@ -12,8 +12,18 @@ exports.getUser = async (req, res, next) => {
     try {
         const user = await User.findOne({ where: { id: req.userId}});
         if (!user) {
-            //code
+            const error = new Error('User not found');
+            error.statusCode = 404;
+            throw error;
         }
+        return res.status(200).json({
+            status: 'Successful',
+            statusCode: 200,
+            message: 'Returning user',
+            data: {
+                user
+            }
+        })
     } catch(error) {
         if (!error.statusCode) {
             error.statusCode = 500;
@@ -81,7 +91,8 @@ exports.postLogin = async (req, res, next) => {
                 statusCode: 200,
                 message: 'Loggin in',
                 data: {
-                    user: user
+                    user,
+                    token
                 }
             })
         } catch(error) {
