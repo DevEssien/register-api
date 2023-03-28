@@ -3,13 +3,14 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 
 exports.getHome = (req, res, next) => {
-    res.status(200).json({
+    return res.status(200).json({
         message: 'signing up'
     })
 }
 
 exports.getUser = async (req, res, next) => {
     try {
+        console.log('id ', req.userId)
         const user = await User.findOne({ where: { id: req.userId}});
         if (!user) {
             const error = new Error('User not found');
@@ -84,8 +85,12 @@ exports.postLogin = async (req, res, next) => {
                 throw error
             }
             const token = jwt.sign({
+                id: user?.id,
                 email: user?.email
             }, 'checktHis2SecreTkeY', { expiresIn: '1h'})
+
+            user.token = token;
+            
             return res.status(200).json({
                 status: 'Successful',
                 statusCode: 200,

@@ -1,6 +1,7 @@
 const express = require('express')
 const { check, body } = require('express-validator')
 
+const isAuth = require('../middleware/auth')
 const User = require('../models/user')
 const userController = require('../controllers/user-auth');
 
@@ -8,7 +9,7 @@ const router = express.Router();
 
 router.get('/', userController.getHome)
 
-router.get('/user', userController.getUser)
+router.get('/user', isAuth, userController.getUser)
 
 router.post('/signup', [
     check('email')
@@ -41,7 +42,7 @@ router.post('/signup', [
     .trim()
 ], userController.postSignup);
 
-router.post('/login', [
+router.post('/login', isAuth, [
     check('email')
     .isEmail()
     .withMessage('Please enter a valid email')
