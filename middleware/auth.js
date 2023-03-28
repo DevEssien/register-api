@@ -6,7 +6,6 @@ module.exports = (req, res, next) => {
         req.isAuth = false;
         return next()
     }
-    console.log('token ', token)
     let decodedToken;
     try {
         decodedToken = jwt.verify(token, 'checktHis2SecreTkeY')

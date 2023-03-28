@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const { validationResult } = require('express-validator')
+
 const User = require('../models/user')
 
 exports.getHome = (req, res, next) => {
@@ -10,7 +12,6 @@ exports.getHome = (req, res, next) => {
 
 exports.getUser = async (req, res, next) => {
     try {
-        console.log('id ', req.userId)
         const user = await User.findOne({ where: { id: req.userId}});
         if (!user) {
             const error = new Error('User not found');
@@ -36,6 +37,12 @@ exports.getUser = async (req, res, next) => {
 exports.postSignup = async (req, res, next) => {
     const { username, email, password } = req.body
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            const error = new Error('validation failed! Invalid data input');
+            error.status = 422;
+            throw error;
+        }
         const user = await User.findOne({ where: { email: email }})
         if (user) {
             const error = new Error('Email exist! enter another email')
@@ -71,6 +78,12 @@ exports.postSignup = async (req, res, next) => {
 exports.postLogin = async (req, res, next) => {
     const { email, password } = req.body;
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const error = new Error('validation failed! check login data');
+            error.statusCode = 422;
+            throw error
+        }
         const user = await User.findOne({ where: { email: email }})
         if (!user) {
             const error = new Error('No user with email found')
